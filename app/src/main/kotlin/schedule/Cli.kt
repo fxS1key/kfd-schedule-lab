@@ -31,6 +31,7 @@ fun parseCommand(args: Array<String>): Command {
         else -> throw InvalidArgumentsException()
     }
     if (args.size != 1 + 2 * required.size) throw InvalidArgumentsException()
+
     val values = mutableMapOf<String, String>()
     for (index in 1 until args.size step 2) {
         val key = args[index]
@@ -40,6 +41,7 @@ fun parseCommand(args: Array<String>): Command {
         }
         values[key] = value
     }
+
     val file = values.getValue("--file")
     return when (name) {
         "period" -> {
