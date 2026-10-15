@@ -13,22 +13,105 @@ object StudentCommandHandlers : CommandHandlers {
 }
 
 fun runPeriod(command: Command.Period): Int {
-    // TODO: parse every line of command.file, filter by command.from..command.to,
-    // print the selected sessions and Total, return 0 or 1.
-    println("Not implemented: period")
-    return 2
+    val sessions = mutableListOf<Session>()
+    var hasErrors = false
+
+    forEachScheduleLine(command.file) {number, line ->
+        when (val result = parseLine(number, line)) {
+            is ParserResult.Success -> {
+                if (result.session.date in command.from..command.to) {
+                    sessions.add(result.session)
+                }
+            }
+            is ParserResult.Failure -> hasErrors = true
+        }
+    }
+
+    sessions.forEach {
+        println(formatSession(it, includeTeachers = false))
+    }
+    println("Total: ${sessions.size}")
+    return if (hasErrors) 1 else 0
 }
 
 fun runType(command: Command.ByType): Int {
-    // TODO: parse every line of command.file, filter by command.type,
-    // print the selected sessions with teachers and Total, return 0 or 1.
-    println("Not implemented: type")
-    return 2
+    val sessions = mutableListOf<Session>()
+    var hasErrors = false
+
+    forEachScheduleLine(command.file) {number, line ->
+        when (val result = parseLine(number, line)) {
+            is ParserResult.Success -> {
+                val isCorrectType = when (command.type) {
+                    SessionType.PRACTICE -> result.session is Session.Practice
+                    SessionType.LECTURE -> result.session is Session.Lecture
+                    SessionType.EXAM -> result.session is Session.Exam
+                    SessionType.CANCELLED -> result.session is Session.Cancelled
+                }
+
+                if (isCorrectType) {
+                    sessions.add(result.session)
+                }
+            }
+            is ParserResult.Failure -> hasErrors = true
+        }
+    }
+
+    sessions.forEach {
+        println(formatSession(it, includeTeachers = true))
+    }
+    println("Total: ${sessions.size}")
+    return if (hasErrors) 1 else 0
 }
 
 fun runErrors(command: Command.Errors): Int {
-    // TODO: parse every line of command.file, print formatted rejections
-    // and Rejected: K of M, return 0 or 1.
-    println("Not implemented: errors")
-    return 2
+    var total = 0L
+    var rejected = 0L
+
+    forEachScheduleLine(command.file) {number, line ->
+        total++
+
+        when (parseLine(number, line)) {
+            is ParserResult.Success -> {}
+            is ParserResult.Failure -> {
+                rejected++
+            }
+        }
+    }
+
+    println("Rejected: $rejected of $total")
+
+    return if (rejected > 0) 1 else 0
+}
+
+
+fun formatSession(session: Session, includeTeachers: Boolean): String {
+    return when (session) {
+        is Session.Lecture ->
+            if (includeTeachers) {
+                "${session.date} | LECTURE | ${session.topic} | ${session.location} | ${session.teachers.joinToString(", ")}"
+            } else {
+                "${session.date} | LECTURE | ${session.topic} | ${session.location}"
+            }
+
+        is Session.Practice ->
+            if (includeTeachers) {
+                "${session.date} | PRACTICE | ${session.topic} | ${session.location} | ${session.teachers.joinToString(", ")}"
+            } else {
+                "${session.date} | PRACTICE | ${session.topic} | ${session.location}"
+            }
+
+        is Session.Exam ->
+            if (includeTeachers) {
+                "${session.date} | EXAM | ${session.topic} | ${session.location} | ${session.teachers.joinToString(", ")}"
+            } else {
+                "${session.date} | EXAM | ${session.topic} | ${session.location}"
+            }
+
+        is Session.Cancelled ->
+            if (includeTeachers) {
+                "${session.date} | CANCELLED | ${session.topic} | - | -"
+            } else {
+                "${session.date} | CANCELLED | ${session.topic} | -"
+            }
+    }
 }
