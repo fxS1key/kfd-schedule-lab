@@ -15,8 +15,6 @@ class ParserTest {
         return assertIs<ParserResult.Failure>(result)
     }
 
-    // MARK: Field separator
-
     @Test
     fun invalidSeparation() {
         val result = failure("2026-10-15")
@@ -30,8 +28,6 @@ class ParserTest {
 
         assertIs<ParseError.InvalidSeparation>(result.error)
     }
-
-    // MARK: Field count
 
     @Test
     fun tooFewFields() {
@@ -58,8 +54,6 @@ class ParserTest {
         val error = assertIs<ParseError.WrongFieldCount>(result.error)
         assertEquals(3, error.invalidSize)
     }
-
-    // MARK: Empty fields
 
     @Test
     fun emptyDate() {
@@ -117,8 +111,6 @@ class ParserTest {
         assertEquals(1, error.indexOfLine)
     }
 
-    // MARK: Date validation
-
     @Test
     fun malformedDateFormat() {
         val result = failure("15-10-2026|LECTURE|Math|Room 1|Ivanov")
@@ -167,8 +159,6 @@ class ParserTest {
         assertIs<ParseError.InvalidTimeFormat>(result.error)
     }
 
-    // MARK: Session type
-
     @Test
     fun unknownSessionType() {
         val result = failure("2026-10-15|SEMINAR|Math|Room 1|Ivanov")
@@ -176,8 +166,6 @@ class ParserTest {
         val error = assertIs<ParseError.SessionTypeError>(result.error)
         assertEquals("SEMINAR", error.sessionType)
     }
-
-    // MARK: Teacher validation
 
     @Test
     fun examWithOneTeacherIsRejected() {
@@ -188,12 +176,12 @@ class ParserTest {
         assertEquals(listOf("Ivanov"), error.teachers)
     }
 
-//    @Test
-//    fun examWithNoValidTeachersIsRejected() {
-//        val result = failure("2026-10-15|EXAM|Math|Room 1|, ")
-//
-//        assertIs<ParseError.NotEnoughTeachers>(result.error)
-//    }
+    @Test
+    fun examWithNoValidTeachersIsRejected() {
+        val result = failure("2026-10-15|EXAM|Math|Room 1|, ")
+
+        assertIs<ParseError.NotEnoughTeachers>(result.error)
+    }
 
     @Test
     fun examWithTwoTeachersIsAccepted() {
@@ -219,13 +207,8 @@ class ParserTest {
     fun unknownTypeHasPriorityOverTeacherCount() {
         val result = failure("2026-10-15|SEMINAR|Math|Room 1|")
 
-        // По приоритету сначала проверяется тип сессии.
-        // Но если поле teachers пустое, проверка пустых полей
-        // должна сработать раньше проверки типа.
         assertIs<ParseError.EmptyParameterInLine>(result.error)
     }
-
-    // MARK: Text validation
 
     @Test
     fun controlCharacterInTopic() {
@@ -261,17 +244,15 @@ class ParserTest {
         assertEquals("Math ", error.line)
     }
 
-//    @Test
-//    fun controlCharacterInLaterFieldHasPriorityOverEarlierWhitespace() {
-//        val result = failure(
-//            "2026-10-15|LECTURE| Math|Room\n1|Ivanov"
-//        )
-//
-//        val error = assertIs<ParseError.ControlChar>(result.error)
-//        assertEquals("Room\n1", error.field)
-//    }
+    @Test
+    fun controlCharacterInLaterFieldHasPriorityOverEarlierWhitespace() {
+        val result = failure(
+            "2026-10-15|LECTURE| Math|Room\n1|Ivanov"
+        )
 
-    // MARK: Cancelled sessions
+        val error = assertIs<ParseError.ControlChar>(result.error)
+        assertEquals("Room\n1", error.field)
+    }
 
     @Test
     fun cancelledSessionWithRequiredMarkersIsAccepted() {
