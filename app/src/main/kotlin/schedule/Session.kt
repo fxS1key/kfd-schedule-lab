@@ -105,4 +105,35 @@ sealed interface Session {
         }
     }
 
+    fun formatOutput(includeTeachers: Boolean): String {
+        return when (this) {
+            is Lecture ->
+                if (includeTeachers) {
+                    "${this.date} | LECTURE | ${this.topic} | ${this.location} | ${this.teachers.joinToString(", ")}"
+                } else {
+                    "${this.date} | LECTURE | ${this.topic} | ${this.location}"
+                }
+
+            is Practice ->
+                if (includeTeachers) {
+                    "${this.date} | PRACTICE | ${this.topic} | ${this.location} | ${this.teachers.joinToString(", ")}"
+                } else {
+                    "${this.date} | PRACTICE | ${this.topic} | ${this.location}"
+                }
+
+            is Exam ->
+                if (includeTeachers) {
+                    "${this.date} | EXAM | ${this.topic} | ${this.location} | ${this.teachers.joinToString(", ")}"
+                } else {
+                    "${this.date} | EXAM | ${this.topic} | ${this.location}"
+                }
+
+            is Cancelled ->
+                if (includeTeachers) {
+                    "${this.date} | CANCELLED | ${this.topic} | - | -"
+                } else {
+                    "${this.date} | CANCELLED | ${this.topic} | -"
+                }
+        }
+    }
 }

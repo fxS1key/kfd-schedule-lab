@@ -28,7 +28,7 @@ fun runPeriod(command: Command.Period): Int {
     }
 
     sessions.forEach {
-        println(formatSession(it, includeTeachers = false))
+        println(it.formatOutput(includeTeachers = false))
     }
     println("Total: ${sessions.size}")
     return if (hasErrors) 1 else 0
@@ -57,7 +57,7 @@ fun runType(command: Command.ByType): Int {
     }
 
     sessions.forEach {
-        println(formatSession(it, includeTeachers = true))
+        println(it.formatOutput(includeTeachers = true))
     }
     println("Total: ${sessions.size}")
     return if (hasErrors) 1 else 0
@@ -70,9 +70,14 @@ fun runErrors(command: Command.Errors): Int {
     forEachScheduleLine(command.file) {number, line ->
         total++
 
-        when (parseLine(number, line)) {
+        when (val result = parseLine(number, line)) {
             is ParserResult.Success -> {}
+
             is ParserResult.Failure -> {
+                println(formatParseError(
+                    numberLine = number,
+                    error = result.error
+                ))
                 rejected++
             }
         }
@@ -81,37 +86,4 @@ fun runErrors(command: Command.Errors): Int {
     println("Rejected: $rejected of $total")
 
     return if (rejected > 0) 1 else 0
-}
-
-
-fun formatSession(session: Session, includeTeachers: Boolean): String {
-    return when (session) {
-        is Session.Lecture ->
-            if (includeTeachers) {
-                "${session.date} | LECTURE | ${session.topic} | ${session.location} | ${session.teachers.joinToString(", ")}"
-            } else {
-                "${session.date} | LECTURE | ${session.topic} | ${session.location}"
-            }
-
-        is Session.Practice ->
-            if (includeTeachers) {
-                "${session.date} | PRACTICE | ${session.topic} | ${session.location} | ${session.teachers.joinToString(", ")}"
-            } else {
-                "${session.date} | PRACTICE | ${session.topic} | ${session.location}"
-            }
-
-        is Session.Exam ->
-            if (includeTeachers) {
-                "${session.date} | EXAM | ${session.topic} | ${session.location} | ${session.teachers.joinToString(", ")}"
-            } else {
-                "${session.date} | EXAM | ${session.topic} | ${session.location}"
-            }
-
-        is Session.Cancelled ->
-            if (includeTeachers) {
-                "${session.date} | CANCELLED | ${session.topic} | - | -"
-            } else {
-                "${session.date} | CANCELLED | ${session.topic} | -"
-            }
-    }
 }
