@@ -40,14 +40,14 @@ fun formatParseError(
         is ParseError.InvalidCancelledField ->
             "invalid fields for type \"CANCELLED\": \"${escapeValue(error.field)}\""
 
-        is ParseError.InvalidLocation ->
-            "invalid location \"${error.location}\""
-
         is ParseError.InvalidTeacher ->
-            "invalid teacher \"${error.teacher}\""
+            "invalid teacher \"${escapeValue(error.teacher)}\""
 
         is ParseError.DuplicateTeacher ->
-            "duplicate teacher \"${error.teacher}\""
+            "duplicate teacher \"${escapeValue(error.teacher)}\""
+
+        is ParseError.InvalidLocation ->
+            "invalid location \"${escapeValue(error.location)}\""
     }
 
     return "line $numberLine: $message"
