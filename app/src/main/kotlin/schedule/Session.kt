@@ -29,7 +29,7 @@ private fun validateSession(date: LocalDate, topic: String) {
     require(date.year in 1..9999) {
         "Invalid date"
     }
-    validateText(topic, "Topic")
+    validateText(topic, "Topic", allowDashSing = true)
 }
 
 
@@ -67,7 +67,7 @@ sealed interface Session {
         override val date: LocalDate,
         override val topic: String,
         val location: String,
-        val rawTeachers: List<String>,
+        private val rawTeachers: List<String>,
     ) : Session {
         val teachers: List<String> =
             Collections.unmodifiableList(rawTeachers.toList())
@@ -81,7 +81,7 @@ sealed interface Session {
         override val date: LocalDate,
         override val topic: String,
         val location: String,
-        val rawTeachers: List<String>
+        private val rawTeachers: List<String>
     ) : Session {
         val teachers: List<String> =
             Collections.unmodifiableList(rawTeachers.toList())
@@ -95,7 +95,7 @@ sealed interface Session {
         override val date: LocalDate,
         override val topic: String,
         val location: String,
-        val rawTeachers: List<String>
+        private val rawTeachers: List<String>
     ) : Session {
         val teachers: List<String> =
             Collections.unmodifiableList(rawTeachers.toList())

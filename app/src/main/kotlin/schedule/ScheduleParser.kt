@@ -89,6 +89,24 @@ fun parseLine(
     val location = fields[3]
     val teacherRawText = fields[4]
 
+    if (sessionType == SessionType.EXAM) {
+        val teachers = teacherRawText.split(',')
+        val validCount = teachers.count {
+            it.isNotBlank() && it != "-"
+        }
+
+        if (validCount < 2) {
+            return ParserResult.Failure(
+                numberLine = numberLine,
+                error = ParseError.NotEnoughTeachers(
+                    teachers = teachers,
+                    type = sessionType
+                )
+            )
+        }
+    }
+
+
     fields.forEach { field ->               // 7-1 Управляющие символы.
         if (field.any { it.isISOControl() }) {
             return ParserResult.Failure(
@@ -117,22 +135,37 @@ fun parseLine(
     }
 
 
-    if (sessionType != SessionType.CANCELLED) {                 // 7-5 Недопустимые элементы списка преподавателей.
-        val teachers = teacherRawText.split(',')    // 7-6 Повторные имена преподавателей.
-        val validTeachers = teachers.count {
-            it.isNotBlank() && it != "-"
-        }
-
-        val required = if (sessionType == SessionType.EXAM) 2 else 1
-
-        if (validTeachers < required) {
+    if (sessionType != SessionType.CANCELLED) {
+        // 7-4: место занятия
+        if (location == "-") {
             return ParserResult.Failure(
                 numberLine = numberLine,
-                error = ParseError.NotEnoughTeachers(
-                    teachers = teachers,
-                    type = sessionType
-                )
+                error = ParseError.InvalidLocation(location)
             )
+        }
+
+        val teachers = teacherRawText.split(',')
+
+        // 7-5: отдельные элементы списка преподавателей
+        for (teacher in teachers) {
+            if (teacher.isBlank() || teacher == "-" || teacher.trim() != teacher) {
+                return ParserResult.Failure(
+                    numberLine = numberLine,
+                    error = ParseError.InvalidTeacher(teacher)
+                )
+            }
+        }
+
+        // 7-6: повторные имена
+        val seen = mutableSetOf<String>()
+
+        for (teacher in teachers) {
+            if (!seen.add(teacher)) {
+                return ParserResult.Failure(
+                    numberLine = numberLine,
+                    error = ParseError.DuplicateTeacher(teacher)
+                )
+            }
         }
     }
 

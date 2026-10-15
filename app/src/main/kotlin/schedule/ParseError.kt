@@ -43,4 +43,16 @@ sealed interface ParseError {
     data class InvalidCancelledField(
         val field: String,
     ) : ParseError
+
+    data class InvalidLocation(
+        val location: String
+    ) : ParseError
+
+    data class InvalidTeacher(
+        val teacher: String
+    ) : ParseError
+
+    data class DuplicateTeacher(
+        val teacher: String
+    ) : ParseError
 }

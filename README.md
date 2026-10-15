@@ -13,3 +13,11 @@
 python3 tools/verify.py
 ```
 
+если без ошибок, то все окей
+
+проверить большой файл
+```bash
+python tools/generate_samples.py --huge
+python3 tools\verify.py --huge
+```
+
