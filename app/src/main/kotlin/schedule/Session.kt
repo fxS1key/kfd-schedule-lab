@@ -3,7 +3,11 @@ package schedule
 import java.time.LocalDate
 import java.util.Collections
 
-private fun validateText(text: String, name: String) {
+private fun validateText(
+    text: String,
+    name: String,
+    allowDashSing: Boolean = false
+) {
     require(text.isNotBlank()) {
         "$name must not be blank"
     }
@@ -13,8 +17,10 @@ private fun validateText(text: String, name: String) {
     require(text.none() { it.isISOControl() }) {
         "$name must not contain special characters"
     }
-    require(text != "-") {
-        "$name cannot be '-'"
+    if (!allowDashSing) {
+        require(text != "-") {
+            "$name cannot be '-'"
+        }
     }
 }
 
@@ -63,7 +69,8 @@ sealed interface Session {
         val location: String,
         val rawTeachers: List<String>,
     ) : Session {
-        val teachers: List<String> = Collections.unmodifiableList(rawTeachers.toList())
+        val teachers: List<String> =
+            Collections.unmodifiableList(rawTeachers.toList())
 
         init {
             validateActiveSession(date, topic, location, this.teachers, 1)
@@ -76,7 +83,8 @@ sealed interface Session {
         val location: String,
         val rawTeachers: List<String>
     ) : Session {
-        val teachers: List<String> = Collections.unmodifiableList(rawTeachers.toList())
+        val teachers: List<String> =
+            Collections.unmodifiableList(rawTeachers.toList())
 
         init {
             validateActiveSession(date, topic, location, this.teachers, 1)
@@ -89,7 +97,8 @@ sealed interface Session {
         val location: String,
         val rawTeachers: List<String>
     ) : Session {
-        val teachers: List<String> = Collections.unmodifiableList(rawTeachers.toList())
+        val teachers: List<String> =
+            Collections.unmodifiableList(rawTeachers.toList())
 
         init {
             validateActiveSession(date, topic, location, this.teachers, 2)

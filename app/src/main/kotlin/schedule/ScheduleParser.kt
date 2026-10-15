@@ -3,7 +3,7 @@ package schedule
 import java.time.LocalDate
 import java.time.format.DateTimeParseException
 
-val REGEXXX = Regex("[0-9]{4}-[0-9]{2}-[0-9]{2}")
+val CODE_REGEX = Regex("[0-9]{4}-[0-9]{2}-[0-9]{2}")
 
 
 /** Priority
@@ -53,7 +53,7 @@ fun parseLine(
         }
     }
 
-    if (!REGEXXX.matches(fields[0])) {  // 4 Неверный формат или значение даты.
+    if (!CODE_REGEX.matches(fields[0])) {  // 4 Неверный формат или значение даты.
         return ParserResult.Failure(
             numberLine = numberLine,
             error = ParseError.InvalidDateFormat(fields[0])
@@ -62,7 +62,7 @@ fun parseLine(
 
     val date = try {                           // 4 Неверный формат или значение даты.
         LocalDate.parse(fields[0])
-    } catch (e: DateTimeParseException) {
+    } catch (_e: DateTimeParseException) {
         return ParserResult.Failure(
             numberLine = numberLine,
             error = ParseError.InvalidTimeFormat(fields[0])
@@ -78,7 +78,7 @@ fun parseLine(
 
     val sessionType = try {                 // 5 Неизвестный тип занятия.
         SessionType.valueOf(fields[1])
-    } catch (e: IllegalArgumentException) {
+    } catch (_: IllegalArgumentException) {
         return ParserResult.Failure(
             numberLine = numberLine,
             error = ParseError.SessionTypeError(fields[1])
@@ -88,26 +88,6 @@ fun parseLine(
     val topic = fields[2]
     val location = fields[3]
     val teacherRawText = fields[4]
-
-    if (sessionType != SessionType.CANCELLED) {         // 7-5 Недопустимые элементы списка преподавателей.
-        val teacherCount = teacherRawText               // 7-6 Повторные имена преподавателей.
-            .split(',')
-            .count { it.isNotBlank() && it != "-"}
-
-        if (sessionType == SessionType.EXAM) {
-            if (teacherCount < 2) {
-                return ParserResult.Failure(
-                    numberLine = numberLine,
-                    error = ParseError.NotEnoughTeachers(teacherRawText, sessionType)
-                )
-            }
-        } else if (teacherCount < 1) {
-            return ParserResult.Failure(
-                numberLine = numberLine,
-                error = ParseError.NotEnoughTeachers(teacherRawText, sessionType)
-            )
-        }
-    }
 
     fields.forEach { field ->               // 7-1 Управляющие символы.
         if (field.any { it.isISOControl() }) {
@@ -136,6 +116,27 @@ fun parseLine(
         }
     }
 
+
+    if (sessionType != SessionType.CANCELLED) {                 // 7-5 Недопустимые элементы списка преподавателей.
+        val teachers = teacherRawText.split(',')    // 7-6 Повторные имена преподавателей.
+        val validTeachers = teachers.count {
+            it.isNotBlank() && it != "-"
+        }
+
+        val required = if (sessionType == SessionType.EXAM) 2 else 1
+
+        if (validTeachers < required) {
+            return ParserResult.Failure(
+                numberLine = numberLine,
+                error = ParseError.NotEnoughTeachers(
+                    teachers = teachers,
+                    type = sessionType
+                )
+            )
+        }
+    }
+
+
     val session: Session = when (sessionType) {
         SessionType.LECTURE -> Session.Lecture(
             date = date,
@@ -162,7 +163,7 @@ fun parseLine(
     }
 
     return ParserResult.Success(
-        session = session,
+        session = session
     )
 }
 
