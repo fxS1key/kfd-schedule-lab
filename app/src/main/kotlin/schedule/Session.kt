@@ -82,6 +82,20 @@ sealed interface Session {
 
         override fun toString(): String =
             "Lecture(date=$date, topic=$topic, location=$location, teachers=$teachers)"
+
+        fun customCopy(
+            date: LocalDate = this.date,
+            topic: String = this.topic,
+            location: String = this.location,
+            teachers: List<String> = this.teachers,
+        ): Lecture {
+            return Lecture(
+                date = date,
+                topic = topic,
+                location = location,
+                rawTeachers = teachers.toList()
+            )
+        }
     }
 
     data class Practice (
@@ -98,7 +112,7 @@ sealed interface Session {
         }
 
         override fun equals(other: Any?): Boolean =
-            this === other || (other is Lecture &&
+            this === other || (other is Practice &&
                     date == other.date && topic == other.topic &&
                     location == other.location && teachers == other.teachers)
 
@@ -106,6 +120,20 @@ sealed interface Session {
 
         override fun toString(): String =
             "Lecture(date=$date, topic=$topic, location=$location, teachers=$teachers)"
+
+        fun customCopy(
+            date: LocalDate = this.date,
+            topic: String = this.topic,
+            location: String = this.location,
+            teachers: List<String> = this.teachers,
+        ): Practice {
+            return Practice(
+                date = date,
+                topic = topic,
+                location = location,
+                rawTeachers = teachers.toList()
+            )
+        }
     }
 
     data class Exam (
@@ -122,7 +150,7 @@ sealed interface Session {
         }
 
         override fun equals(other: Any?): Boolean =
-            this === other || (other is Lecture &&
+            this === other || (other is Exam &&
                     date == other.date && topic == other.topic &&
                     location == other.location && teachers == other.teachers)
 
@@ -130,6 +158,20 @@ sealed interface Session {
 
         override fun toString(): String =
             "Lecture(date=$date, topic=$topic, location=$location, teachers=$teachers)"
+
+        fun customCopy(
+            date: LocalDate = this.date,
+            topic: String = this.topic,
+            location: String = this.location,
+            teachers: List<String> = this.teachers,
+        ): Exam {
+            return Exam(
+                date = date,
+                topic = topic,
+                location = location,
+                rawTeachers = teachers.toList()
+            )
+        }
     }
 
     data class Cancelled (
@@ -146,6 +188,16 @@ sealed interface Session {
         override fun hashCode(): Int = listOf(date, topic).hashCode()
 
         override fun toString(): String = "Cancelled(date=$date, topic=$topic)"
+
+        fun customCopy(
+            date: LocalDate = this.date,
+            topic: String = this.topic
+        ): Cancelled {
+            return Cancelled(
+                date = date,
+                topic = topic
+            )
+        }
     }
 
     fun formatOutput(includeTeachers: Boolean): String {
