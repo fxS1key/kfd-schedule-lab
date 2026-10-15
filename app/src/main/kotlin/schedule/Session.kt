@@ -75,6 +75,16 @@ sealed interface Session {
         init {
             validateActiveSession(date, topic, location, this.teachers, 1)
         }
+
+        override fun equals(other: Any?): Boolean =
+            this === other || (other is Lecture &&
+                    date == other.date && topic == other.topic &&
+                    location == other.location && teachers == other.teachers)
+
+        override fun hashCode(): Int = listOf(date, topic, location, this.teachers).hashCode()
+
+        override fun toString(): String =
+            "Lecture(date=$date, topic=$topic, location=$location, teachers=$teachers)"
     }
 
     data class Practice (
@@ -89,6 +99,16 @@ sealed interface Session {
         init {
             validateActiveSession(date, topic, location, this.teachers, 1)
         }
+
+        override fun equals(other: Any?): Boolean =
+            this === other || (other is Lecture &&
+                    date == other.date && topic == other.topic &&
+                    location == other.location && teachers == other.teachers)
+
+        override fun hashCode(): Int = listOf(date, topic, location, this.teachers).hashCode()
+
+        override fun toString(): String =
+            "Lecture(date=$date, topic=$topic, location=$location, teachers=$teachers)"
     }
 
     data class Exam (
@@ -103,6 +123,16 @@ sealed interface Session {
         init {
             validateActiveSession(date, topic, location, this.teachers, 2)
         }
+
+        override fun equals(other: Any?): Boolean =
+            this === other || (other is Lecture &&
+                    date == other.date && topic == other.topic &&
+                    location == other.location && teachers == other.teachers)
+
+        override fun hashCode(): Int = listOf(date, topic, location, this.teachers).hashCode()
+
+        override fun toString(): String =
+            "Lecture(date=$date, topic=$topic, location=$location, teachers=$teachers)"
     }
 
     data class Cancelled (
@@ -112,6 +142,13 @@ sealed interface Session {
         init {
             validateSession(date, topic)
         }
+
+        override fun equals(other: Any?): Boolean =
+            this === other || (other is Cancelled && date == other.date && topic == other.topic)
+
+        override fun hashCode(): Int = listOf(date, topic).hashCode()
+
+        override fun toString(): String = "Cancelled(date=$date, topic=$topic)"
     }
 
     fun formatOutput(includeTeachers: Boolean): String {
