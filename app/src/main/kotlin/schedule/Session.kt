@@ -6,7 +6,6 @@ import java.util.Collections
 private fun validateText(
     text: String,
     name: String,
-    allowDashSing: Boolean = false
 ) {
     require(text.isNotBlank()) {
         "$name must not be blank"
@@ -17,10 +16,8 @@ private fun validateText(
     require(text.none() { it.isISOControl() }) {
         "$name must not contain special characters"
     }
-    if (!allowDashSing) {
-        require(text != "-") {
-            "$name cannot be '-'"
-        }
+    require(text != "-") {
+        "$name cannot be '-'"
     }
 }
 
@@ -29,7 +26,7 @@ private fun validateSession(date: LocalDate, topic: String) {
     require(date.year in 1..9999) {
         "Invalid date"
     }
-    validateText(topic, "Topic", allowDashSing = true)
+    validateText(topic, "Topic")
 }
 
 

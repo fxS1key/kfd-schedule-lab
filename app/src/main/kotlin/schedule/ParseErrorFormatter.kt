@@ -54,16 +54,18 @@ fun formatParseError(
 
 private fun fieldName(index: Int): String =
     listOf("date", "type", "topic", "location", "teachers")
-        .getOrElse(index) { "unknown" }
+        .get(index)
 
-private fun escapeValue(value: String): String = buildString {
+private fun escapeValue(value: String): String {
+    var newString: String = ""
     for (char in value) {
-        when {
-            char == '\\' -> append("\\\\")
-            char == '"' -> append("\\\"")
-            char.code < 0x20 || char.code > 0x7E ->
-                append("\\u%04X".format(char.code))
-            else -> append(char)
+        newString += when {
+            char == '\\' -> "\\\\"
+            char == '"' -> "\\\""
+            char.code !in 0x20..0x7E ->
+                "\\u%04X".format(char.code)
+            else -> char
         }
     }
+    return newString
 }
