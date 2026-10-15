@@ -31,7 +31,7 @@ fun formatParseError(
             val required = if (error.type == SessionType.EXAM) 2 else 1
 
             "type \"${error.type.name}\" requires at least $required " +
-                    "teachers, got $actual"
+                "teachers, got $actual"
         }
 
         is ParseError.ControlChar ->
@@ -41,13 +41,13 @@ fun formatParseError(
             "invalid fields for type \"CANCELLED\": \"${escapeValue(error.field)}\""
 
         is ParseError.InvalidLocation ->
-            "invalid location \"${error.location}\""
+            "invalid location \"${escapeValue(error.location)}\""
 
         is ParseError.InvalidTeacher ->
-            "invalid teacher \"${error.teacher}\""
+            "invalid teacher \"${escapeValue(error.teacher)}\""
 
         is ParseError.DuplicateTeacher ->
-            "duplicate teacher \"${error.teacher}\""
+            "duplicate teacher \"${escapeValue(error.teacher)}\""
     }
 
     return "line $numberLine: $message"
