@@ -1,9 +1,7 @@
 package schedule
 
-import java.time.LocalDate
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertIs
 
 class ParseErrorFormatterTest {
     @Test
@@ -19,20 +17,25 @@ class ParseErrorFormatterTest {
     @Test
     fun escapesQuotesBackslashesControlsAndNonAsciiInValues() {
         val raw = "bad\"\\\nё"
+
+        // Build the expected escaped value in pieces so Kotlin does not interpret
+        // the literal sequences \\u000A and \\u0451 as character escapes.
+        val escaped = "bad" + "\\\"" + "\\\\" + "\\u000A" + "\\u0451"
+
         assertEquals(
-            "line 1: unknown session type \"bad\\\"\\\\\\u000A\\u0451\"",
+            "line 1: unknown session type \"" + escaped + "\"",
             formatParseError(1, ParseError.SessionTypeError(raw)),
         )
         assertEquals(
-            "line 2: invalid teacher \"bad\\\"\\\\\\u000A\\u0451\"",
+            "line 2: invalid teacher \"" + escaped + "\"",
             formatParseError(2, ParseError.InvalidTeacher(raw)),
         )
         assertEquals(
-            "line 3: duplicate teacher \"bad\\\"\\\\\\u000A\\u0451\"",
+            "line 3: duplicate teacher \"" + escaped + "\"",
             formatParseError(3, ParseError.DuplicateTeacher(raw)),
         )
         assertEquals(
-            "line 4: invalid location \"bad\\\"\\\\\\u000A\\u0451\"",
+            "line 4: invalid location \"" + escaped + "\"",
             formatParseError(4, ParseError.InvalidLocation(raw)),
         )
     }
@@ -57,7 +60,7 @@ class ParseErrorFormatterTest {
             ParseError.InvalidTimeFormat("2026-02-30"),
             ParseError.SessionTypeError("SEMINAR"),
             ParseError.NotEnoughTeachers(listOf("Ivanov"), SessionType.EXAM),
-            ParseError.ControlChar("Ma\nth"),
+            ParseError.ControlChar("Ma\\nth"),
             ParseError.InvalidCancelledField("Room 1|Ivanov"),
             ParseError.InvalidLocation("-"),
             ParseError.InvalidTeacher("-"),
