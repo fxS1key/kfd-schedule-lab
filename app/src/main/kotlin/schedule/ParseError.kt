@@ -19,10 +19,6 @@ sealed interface ParseError {
         val dateFormat: String,
     ) : ParseError
 
-    data class InvalidTimeFormat(
-        val timeFormat: String,
-    ) : ParseError
-
     data class SessionTypeError(
         val sessionType: String,
     ) : ParseError
@@ -30,11 +26,7 @@ sealed interface ParseError {
     data class NotEnoughTeachers(
         val teachers: List<String>,
         val type: SessionType,
-    ) : ParseError {
-        constructor(teacher: String, type: SessionType) : this(
-            teachers = teacher.split(","),
-            type = type)
-    }
+    ) : ParseError
 
     data class ControlChar(
         val field: String,

@@ -1,9 +1,7 @@
 package schedule
 
-import java.time.LocalDate
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertIs
 
 class ParseErrorFormatterTest {
     @Test
@@ -11,7 +9,7 @@ class ParseErrorFormatterTest {
         assertEquals("line 3: invalid field separator", formatParseError(3, ParseError.InvalidSeparation))
         assertEquals("line 4: got 6 fields, expected 5", formatParseError(4, ParseError.WrongFieldCount(6)))
         assertEquals("line 5: empty required field \"date\"", formatParseError(5, ParseError.EmptyParameterInLine(0)))
-        assertEquals("line 6: invalid date \"2026-13-45\"", formatParseError(6, ParseError.InvalidTimeFormat("2026-13-45")))
+        assertEquals("line 6: invalid date \"2026-13-45\"", formatParseError(6, ParseError.InvalidDateFormat("2026-13-45")))
         assertEquals("line 7: unknown session type \"SEMINAR\"", formatParseError(7, ParseError.SessionTypeError("SEMINAR")))
         assertEquals("line 8: type \"EXAM\" requires at least 2 teachers, got 1", formatParseError(8, ParseError.NotEnoughTeachers(listOf("Ivanov"), SessionType.EXAM)))
     }
@@ -59,7 +57,7 @@ class ParseErrorFormatterTest {
             ParseError.EmptyParameterInLine(4),
             ParseError.BadFormatParameter(" Math "),
             ParseError.InvalidDateFormat("2026-1-01"),
-            ParseError.InvalidTimeFormat("2026-02-30"),
+            ParseError.InvalidDateFormat("2026-02-30"),
             ParseError.SessionTypeError("SEMINAR"),
             ParseError.NotEnoughTeachers(listOf("Ivanov"), SessionType.EXAM),
             ParseError.ControlChar("Ma\nth"),

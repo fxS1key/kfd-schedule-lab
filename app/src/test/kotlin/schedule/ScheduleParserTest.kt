@@ -123,16 +123,16 @@ class ParserTest {
     fun impossibleCalendarDate() {
         val result = failure("2026-13-45|LECTURE|Math|Room 1|Ivanov")
 
-        val error = assertIs<ParseError.InvalidTimeFormat>(result.error)
-        assertEquals("2026-13-45", error.timeFormat)
+        val error = assertIs<ParseError.InvalidDateFormat>(result.error)
+        assertEquals("2026-13-45", error.dateFormat)
     }
 
     @Test
     fun invalidLeapDay() {
         val result = failure("2025-02-29|LECTURE|Math|Room 1|Ivanov")
 
-        val error = assertIs<ParseError.InvalidTimeFormat>(result.error)
-        assertEquals("2025-02-29", error.timeFormat)
+        val error = assertIs<ParseError.InvalidDateFormat>(result.error)
+        assertEquals("2025-02-29", error.dateFormat)
     }
 
     @Test
@@ -156,7 +156,7 @@ class ParserTest {
     fun invalidDateHasPriorityOverUnknownType() {
         val result = failure("2026-13-45|SEMINAR|Math|Room 1|Ivanov")
 
-        assertIs<ParseError.InvalidTimeFormat>(result.error)
+        assertIs<ParseError.InvalidDateFormat>(result.error)
     }
 
     @Test

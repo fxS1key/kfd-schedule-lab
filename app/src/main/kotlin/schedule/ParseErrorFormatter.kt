@@ -17,9 +17,8 @@ fun formatParseError(
         is ParseError.BadFormatParameter ->
             "field has leading or trailing whitespace: \"${escapeValue(error.line)}\""
 
-        is ParseError.InvalidDateFormat,
-        is ParseError.InvalidTimeFormat ->
-            "invalid date \"${escapeValue(errorDate(error))}\""
+        is ParseError.InvalidDateFormat ->
+            "invalid date \"${error.dateFormat}\""
 
         is ParseError.SessionTypeError ->
             "unknown session type \"${escapeValue(error.sessionType)}\""
@@ -56,13 +55,6 @@ fun formatParseError(
 private fun fieldName(index: Int): String =
     listOf("date", "type", "topic", "location", "teachers")
         .getOrElse(index) { "unknown" }
-
-private fun errorDate(error: ParseError): String =
-    when (error) {
-        is ParseError.InvalidDateFormat -> error.dateFormat
-        is ParseError.InvalidTimeFormat -> error.timeFormat
-        else -> error.toString()
-    }
 
 private fun escapeValue(value: String): String = buildString {
     for (char in value) {

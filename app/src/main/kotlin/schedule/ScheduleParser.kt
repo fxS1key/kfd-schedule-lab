@@ -62,10 +62,10 @@ fun parseLine(
 
     val date = try {                           // 4 Неверный формат или значение даты.
         LocalDate.parse(fields[0])
-    } catch (_e: DateTimeParseException) {
+    } catch (_: DateTimeParseException) {
         return ParserResult.Failure(
             numberLine = numberLine,
-            error = ParseError.InvalidTimeFormat(fields[0])
+            error = ParseError.InvalidDateFormat(fields[0])
         )
     }
 
