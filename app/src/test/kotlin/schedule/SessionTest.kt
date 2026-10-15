@@ -112,7 +112,7 @@ class SessionTest {
         )
 
         assertFailsWith<IllegalArgumentException> {
-            session.copy(topic = " ")
+            session.customCopy(topic = " ")
         }
 
         assertFailsWith<IllegalArgumentException> {

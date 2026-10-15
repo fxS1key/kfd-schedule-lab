@@ -14,7 +14,7 @@ python3 tools/verify.py
 Проверить большой файл (2 млн строк) и проверить правильность его обработки
 ```bash
 python tools/generate_samples.py --huge
-python3 tools\verify.py --huge
+python3 tools/verify.py --huge
 ```
 
 # Структура проекта
@@ -30,7 +30,8 @@ python3 tools\verify.py --huge
     ├── ParserResult.kt       // вид ошибки: ошибка или успех
     ├── ScheduleParser.kt     // парсер строк
     ├── Session.kt            // sealed класс session c data class Вида пары 
-    └── SessionRepository.kt  // управление list'ом сессий
+    ├── SessionRepository.kt  // управление list'ом' сессий
+    └── ChangeTime.kt         // меняет дату в сессии
 ```
 
 # Структура тестов
@@ -43,6 +44,7 @@ python3 tools\verify.py --huge
     ├── ScheduleParserEdgeCasesTest.kt
     ├── ScheduleParserTest.kt
     ├── SessionRepositoryTest.kt
+    ├── SessionChangeTimeTest.kt
     └── SessionTest.kt
 ```
 
@@ -66,3 +68,16 @@ python3 tools\verify.py --huge
 - в парсере строк также добавлена валидация, но не вызывающая ошибку, а возвращающее data class Success/Failure интерфейса
 
 Введено множество тестов (более 50 на валидацию данных, на правильность Error, output)
+
+# Проверка «сломай свою модель»
+
+| Попытка | Что защищает | Как |
+|---|---|---|
+| 1. Пустая тема | проверка при создании | `validateText` в `init` |
+| 2. Год `0` или `10000` | проверка при создании | `validateSession`, год `1..9999` |
+| 3. Действующее занятие без преподавателей | проверка при создании | `validateActiveSession` |
+| 4. Сдача с одним преподавателем | проверка при создании | минимум 2 у `Exam` |
+| 5. Сдача с двумя одинаковыми | проверка при создании | сравнение с `distinct()` |
+| 6. Изменить исходный список | защита коллекции | копия списка при создании |
+| 7. Изменить выданный список | защита коллекции | `unmodifiableList` |
+| 8. Обойти проверки через `copy` | устройство типа | `customCopy` идёт через конструктор, `init` срабатывает снова |
