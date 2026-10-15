@@ -10,7 +10,7 @@ private fun validateText(text: String, name: String) {
     require(text.trim() == text) {
         "$name must not contain spaces on sides"
     }
-    require(text.all { it.isLetterOrDigit() || it == ' ' }) {
+    require(text.none() { it.isISOControl() }) {
         "$name must not contain special characters"
     }
     require(text != "-") {
@@ -52,6 +52,7 @@ private fun validateActiveSession(
     }
 }
 
+
 sealed interface Session {
     val date: LocalDate
     val topic: String
@@ -82,7 +83,7 @@ sealed interface Session {
         }
     }
 
-    data class PassLesson (
+    data class Exam (
         override val date: LocalDate,
         override val topic: String,
         val location: String,
@@ -95,7 +96,7 @@ sealed interface Session {
         }
     }
 
-    data class Cancellation (
+    data class Cancelled (
         override val date: LocalDate,
         override val topic: String,
     ) : Session {

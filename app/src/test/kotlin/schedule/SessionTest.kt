@@ -47,9 +47,9 @@ class SessionTest {
     }
 
     @Test
-    fun rejectPassLessonWithOneTeacher() {
+    fun rejectExamWithOneTeacher() {
         assertFailsWith<IllegalArgumentException> {
-            Session.PassLesson(
+            Session.Exam(
                 date = LocalDate.of(2026, 10, 15),
                 topic = "Math",
                 location = "Room 101",
@@ -61,7 +61,7 @@ class SessionTest {
     @Test
     fun rejectLessonWithDuplicateTeachers() {
         assertFailsWith<IllegalArgumentException> {
-            Session.PassLesson(
+            Session.Exam(
                 date = LocalDate.of(2026, 10, 15),
                 topic = "Math",
                 location = "Room 101",
@@ -74,7 +74,7 @@ class SessionTest {
     fun protectTeachersFromChanges() {
         val originalTeachers = mutableListOf("Ivan", "Maria")
 
-        val session = Session.PassLesson(
+        val session = Session.Exam(
             date = LocalDate.of(2026, 10, 15),
             topic = "Math",
             location = "Room 101",
